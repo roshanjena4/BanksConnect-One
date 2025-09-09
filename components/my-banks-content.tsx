@@ -10,11 +10,58 @@ import { useSelector } from 'react-redux'
 
 
 const MyBanksContent = () => {
+
+  interface CardApi {
+  id: number;
+  card_number: string;
+  account_no: string;
+  card_type: string;
+  expiry_date: string;
+  cvv: string;
+  cardholder_name: string;
+  pin: string;
+  status: string;
+  issued_at: string;
+}
+interface AccountApi{
+  Id: number;
+  userid: number;
+  bankid: number;
+  accountnumber: string;
+  accounttype: string;
+  balance: number;
+  createdat: string;
+  status: string;
+}
+
+interface BankApi {
+  id: number;
+  name: string;
+  code: string;
+  address: string;
+  contactemail: string;
+  createdat: string;
+  status: string;
+}
+
+
+interface TransactionApi {
+  id: number;
+  from_account_id: string;
+  to_account_id: string;
+  transaction_type: string;
+  amount: number;
+  category: string;
+  description: string;
+  status: string;
+  transaction_time: string;
+}
+
   const cards = useSelector((state: RootState) => state.cards.cardsData)
   const bank = useSelector((state: RootState) => state.bank.bankData)
   const account = useSelector((state: RootState) => state.account.accountData)
   const transaction = useSelector((state: RootState) => state.transaction.transactionData)
-  console.log('cards:', cards);
+  console.log('my banks:', cards);
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -34,18 +81,18 @@ const MyBanksContent = () => {
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Your cards</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {cards?.map((card: any) => {
-            const accountobj = account.find((a: any) => a.accountnumber === card.account_no);
-            const bankName = bank.find((b: any) => b.id === accountobj.bankid)?.name || 'Unknown Bank';
-            const spending = transaction
+          {cards?.map((card: CardApi) => {
+            const accountobj = account?.find((a: AccountApi) => a.accountnumber === card.account_no);
+            const bankName = bank?.find((b: BankApi) => b.id === accountobj?.bankid)?.name || 'Unknown Bank';
+            const spending = (transaction ?? [])
               .filter(
-                (t: any) =>
+                (t: TransactionApi) =>
                   t.from_account_id === card.account_no &&
                   t.transaction_type === 'debit' &&
                   new Date(t.transaction_time).getMonth() === new Date().getMonth() &&
                   new Date(t.transaction_time).getFullYear() === new Date().getFullYear()
               )
-              .reduce((sum: number, t: any) => sum + (t.amount || 0), 0);
+              .reduce((sum: number, t: TransactionApi) => sum + (t.amount || 0), 0);
 
             return (
               <Card key={card.id} className="overflow-hidden">

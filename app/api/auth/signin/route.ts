@@ -4,9 +4,11 @@ import { cookies } from 'next/headers';
 
 export async function POST(req: Request) {
 
-    const { email  } = await req.json();
-    let { password } = await req.json();
-    console.log(email, password);
+    // Read the request body once. Calling req.json() multiple times causes "Body has already been read".
+    const body = await req.json();
+    const { email, password: rawPassword } = body;
+    let password = rawPassword;
+    console.log("Login Request:- ",email, password);
     debugger;
     let userToken;
     password = generateSecureToken(password);

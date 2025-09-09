@@ -99,7 +99,7 @@ const SignUp = () => {
           </div>
 
           <div className="mt-6">
-            <Button type="submit" className="w-full cursor-pointer rounded-md bg-indigo-600 py-2 px-4 text-white hover:bg-indigo-700 dark:hover:bg-indigo-800">
+            <Button disabled={pending} type="submit" className="w-full cursor-pointer rounded-md bg-indigo-600 py-2 px-4 text-white hover:bg-indigo-700 dark:hover:bg-indigo-800">
               Signup
             </Button>
           </div>

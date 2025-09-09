@@ -19,17 +19,51 @@ const TransactionHistoryContent = () => {
   const transactionsData = useSelector((state: RootState) => state.transaction.transactionData)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedAccount, setSelectedAccount] = useState(accounts?.length > 0 ? accounts[0].accountnumber : '')
+  const [selectedAccount, setSelectedAccount] = useState<string>(() => accounts?.[0]?.accountnumber ?? '')
   const [currentPage, setCurrentPage] = useState(1)
   console.log('selectedAccount:', selectedAccount)
 
+  interface AccountApi{
+  Id: number;
+  userid: number;
+  bankid: number;
+  accountnumber: string;
+  accounttype: string;
+  balance: number;
+  createdat: string;
+  status: string;
+}
+
+interface BankApi {
+  id: number;
+  name: string;
+  code: string;
+  address: string;
+  contactemail: string;
+  createdat: string;
+  status: string;
+}
+
+interface TransactionApi {
+  id: number;
+  from_account_id: string;
+  to_account_id: string;
+  transaction_type: string;
+  amount: number;
+  category: string;
+  description: string;
+  status: string;
+  transaction_time: string;
+}
+
+
   // Find selected account and corresponding bank
-  const account = accounts?.find((acc: any) => acc.accountnumber === selectedAccount)
-  const bank = banks?.find((b: any) => account && b.id === account.bankid)
-  const filteredTransactions = transactionsData?.filter((tx: any) => tx.from_account_id === selectedAccount)
+  const account = accounts?.find((acc: AccountApi) => acc.accountnumber === selectedAccount)
+  const bank = banks?.find((b: BankApi) => account && b.id === account.bankid)
+  const filteredTransactions = transactionsData?.filter((tx: TransactionApi) => tx.from_account_id === selectedAccount)
 
   // Calculate total pages
-  const totalPages = Math.ceil(filteredTransactions?.length / PAGE_SIZE)
+  const totalPages = Math.ceil((filteredTransactions?.length ?? 0) / PAGE_SIZE)
 
   // Memoize paginated transactions
   const paginatedTransactions = useMemo(
@@ -64,7 +98,7 @@ const TransactionHistoryContent = () => {
           <div className="flex justify-between items-start">
             <div>
               <h2 className="text-2xl font-bold mb-2">{bank ? bank.name : 'Bank'}</h2>
-              <p className="text-blue-100 mb-4">{account ? account.name : 'Account'}</p>
+              {/* <p className="text-blue-100 mb-4">{account ? account.accounttype : 'Account'}</p> */}
               <p className="text-sm opacity-90"> {account ? account.accountnumber : '----'}</p>
             </div>
             <div className="text-right">
@@ -112,25 +146,25 @@ const TransactionHistoryContent = () => {
 
           {/* Transactions */}
           <div className="space-y-4">
-            {paginatedTransactions?.map((transaction: any, index: number) => (
+            {paginatedTransactions?.map((transaction: TransactionApi, index: number) => (
               <div key={`${transaction.id}-${index}`} className={`grid grid-cols-5 gap-4 items-center py-3 hover:bg-gray-50 rounded-lg px-2 ${transaction.transaction_type === 'credit' ? 'bg-green-50' : 'bg-red-50'}`}>
                 <div className="flex items-center gap-3">
-                  {transaction.avatar ? (
+                  {/* {transaction.avatar ? (
                   <Avatar className="w-10 h-10">
                     <AvatarImage src={transaction.avatar} alt={transaction.merchant || 'Avatar'} />
                     <AvatarFallback>
                     {transaction.merchant?.charAt(0) || 'A'}
                     </AvatarFallback>
                   </Avatar>
-                  ) : (
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${transaction.color || 'bg-gray-200'}`}>
+                  ) : ( */}
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${ 'bg-gray-200'}`}>
                     <span className="text-lg">
                     {transaction.description?.charAt(0) || 'T'}
                     </span>
                   </div>
-                  )}
+                  {/* )} */}
                   <div>
-                  <span className="font-medium text-gray-900">{transaction.merchant || transaction.description}</span>
+                  <span className="font-medium text-gray-900">{ transaction.description}</span>
                   {/* {transaction.description && (
                     <div className="text-xs text-gray-500">{transaction.description}</div>
                   )} */}

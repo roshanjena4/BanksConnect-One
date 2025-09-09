@@ -44,11 +44,25 @@ export default function UserManagement() {
         joinDate: string;
     }
 
+    interface UserApi {
+        Id: number;
+        Name: string;
+        Email: string;
+        Status: string;
+        role: string; // "user" | "admin" | "premium" etc.
+        LastLogin: string;
+        total_balance: string; // Formatted currency string
+        Phone: string;
+        accountsCount: number;
+        JoinDate: string;
+        total_accounts: number;
+    }
+
     const fetchUsersData = async () => {
         const result = await axios.get('/api/users');
         console.log("user:",result.data.data);
-        
-        const mappedUsers = result.data.data?.map((user: any) => ({
+
+        const mappedUsers = result.data.data?.map((user: UserApi) => ({
             id: user.Id,
             name: user.Name,
             email: user.Email,
@@ -69,7 +83,7 @@ export default function UserManagement() {
 
     const [users, setUsers] = useState<User[]>([])
     const [searchTerm, setSearchTerm] = useState("")
-    const [selectedUser, setSelectedUser] = useState<any>(null)
+    const [selectedUser, setSelectedUser] = useState<User | null>(null)
     const [isAddUserOpen, setIsAddUserOpen] = useState(false)
     const [isEditUserOpen, setIsEditUserOpen] = useState(false)
     const [statusFilter, setStatusFilter] = useState("all");
@@ -131,8 +145,8 @@ export default function UserManagement() {
 
     // new states for edit/delete/restore flows
     const [userId, setUserId] = useState<number | null>(null)
-    const [deleteConfirmation, setDeleteConfirmation] = useState<{ open: boolean; user: any }>({ open: false, user: null })
-    const [restoreConfirmation, setRestoreConfirmation] = useState<{ open: boolean; user: any }>({ open: false, user: null })
+    const [deleteConfirmation, setDeleteConfirmation] = useState<{ open: boolean; user: User | null }>({ open: false, user: null })
+    const [restoreConfirmation, setRestoreConfirmation] = useState<{ open: boolean; user: User | null }>({ open: false, user: null })
     const [isDeleting, setIsDeleting] = useState(false)
     const [isRestoring, setIsRestoring] = useState(false)
 
@@ -188,13 +202,17 @@ export default function UserManagement() {
                 toast.error("Failed to save user")
                 return { errors: { general: "Failed to save user" } }
             }
-        } catch (err: any) {
-            console.error("User save error:", err)
-            toast.error(err?.response?.data?.message || "Internal server error")
+        } catch (err: unknown) {
+            if (axios.isAxiosError(err)) {
+                console.log(err.response?.data?.message);
+            } else {
+                console.log(err);
+            }
+            toast.error("Internal server error");
         }
     }
 
-    const handleEditUser = (user: any) => {
+    const handleEditUser = (user: User) => {
         setIsEditUserOpen(true);
         console.log(user);
         
@@ -253,7 +271,7 @@ export default function UserManagement() {
                     }
                 }}>
                     <DialogTrigger asChild>
-                        <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setIsAddUserOpen(true)}>
+                        <Button  className="bg-blue-600 hover:bg-blue-700" onClick={() => setIsAddUserOpen(true)}>
                             <Plus className="w-4 h-4 mr-2" />
                             Add User
                         </Button>
@@ -345,7 +363,7 @@ export default function UserManagement() {
                                 </TabsContent>
                             </Tabs>
                             <div className="flex justify-end gap-2 pt-4">
-                                <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
+                                <Button disabled={pending} type="submit" className="bg-blue-600 hover:bg-blue-700">
                                     {isEditUserOpen ? "Save Changes" : "Create User"}
                                 </Button>
                             </div>

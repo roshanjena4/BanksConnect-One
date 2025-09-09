@@ -19,7 +19,14 @@ import {
 import { Check, Loader2, SendHorizontal, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Button, ButtonProps } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
+import { type VariantProps } from "class-variance-authority"
+import { buttonVariants } from "@/components/ui/button"
+
+type ButtonProps = React.ComponentProps<"button"> & 
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean
+  }
 
 const DRAG_CONSTRAINTS = { left: 0, right: 155 }
 const DRAG_THRESHOLD = 0.9
@@ -31,7 +38,7 @@ const BUTTON_STATES = {
 
 const ANIMATION_CONFIG = {
   spring: {
-    type: "spring",
+    type: "spring" as const,
     stiffness: 400,
     damping: 40,
     mass: 0.8,

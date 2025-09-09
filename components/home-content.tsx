@@ -19,6 +19,16 @@ import { useRouter } from 'next/navigation'
 import fetchUserData from '@/Helper/fetchUserData'
 import { AppDispatch } from '@/app/store';
 
+interface User {
+  id: number;
+  username: string;
+  Name: string;
+  Email: string;
+  email: string;
+  token: string;
+  role: string;
+}
+
 
 
 const budgets = [
@@ -109,7 +119,7 @@ const HomeContent = () => {
           {/* Header */}
           <div>
             <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
-              Welcome, <span className="text-blue-600">{user?.Name}</span>
+              Welcome, <span className="text-blue-600">{(user as User)?.Name}</span>
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-1">
               Access & manage your account and transactions efficiently.
@@ -274,12 +284,12 @@ const HomeContent = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                  <span className="text-lg font-bold">{user?.Name?.split(' ').map((word: string) => word[0]).join('').toUpperCase()}</span>
+                  <span className="text-lg font-bold">{(user as User)?.Name?.split(' ').map((word: string) => word[0]).join('').toUpperCase()}</span>
                 </div>
                 
               </div>
-              <h3 className="text-xl font-semibold mb-1">{user?.Name}</h3>
-              <p className="text-sm opacity-90 mb-4">{user?.email}</p>
+              <h3 className="text-xl font-semibold mb-1">{(user as User)?.Name}</h3>
+              <p className="text-sm opacity-90 mb-4">{(user as User)?.email}</p>
 
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm">My Cards</span>

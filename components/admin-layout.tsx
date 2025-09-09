@@ -16,6 +16,14 @@ import { logout as logoutAction } from '@/lib/actions'
 import { useRouter } from "next/navigation"
 import ThemeToggleButton from "@/components/ui/theme-toggle-button"
 
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  token: string;
+  role: string;
+}
+
 
 interface AdminLayoutProps {
   children: ReactNode
@@ -122,8 +130,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <AvatarFallback className="bg-red-600 text-white">AD</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user?.username}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{(user as User)?.username}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{(user as User)?.email}</p>
             </div>
             <button onClick={() => handleLogout()}>
               <LogOut className='w-5 h-5 text-blue-600 dark:text-blue-800 cursor-pointer' />

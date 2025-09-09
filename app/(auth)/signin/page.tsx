@@ -8,7 +8,6 @@ import { Eye } from "lucide-react";
 import { EyeOff } from "lucide-react";
 import { redirect, RedirectType } from "next/navigation";
 import { useActionState, useState } from "react";
-import { Dispatch } from "@reduxjs/toolkit";
 import { login } from "@/app/Slice/userSlice";
 import { useDispatch } from "react-redux";
 
@@ -98,7 +97,7 @@ const SignIn = () => {
           </div>
 
           <div className="mt-6">
-            <Button className="w-full rounded-md bg-indigo-600 py-2 px-4 text-white hover:bg-indigo-700 dark:hover:bg-indigo-800">
+            <Button disabled={pending} className="w-full rounded-md bg-indigo-600 py-2 px-4 text-white hover:bg-indigo-700 dark:hover:bg-indigo-800">
               Login
             </Button>
           </div>

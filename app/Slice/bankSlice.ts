@@ -1,8 +1,18 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 
+interface BankApi {
+  id: number;
+  name: string;
+  code: string;
+  address: string;
+  contactemail: string;
+  createdat: string;
+  status: string;
+}
+
 export interface BankState {
-  bankData: unknown | null;
+  bankData: BankApi[] | null;
   loading: boolean;
 }
 
@@ -15,7 +25,7 @@ export const bankSlice = createSlice({
   name: 'bank',
   initialState,
   reducers: {
-    setBankData: (state, action: PayloadAction<unknown>) => {
+    setBankData: (state, action: PayloadAction<BankApi[] | null>) => {
       state.bankData = action.payload;
       state.loading = false;
     },

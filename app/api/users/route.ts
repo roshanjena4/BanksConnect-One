@@ -29,14 +29,9 @@ export async function GET() {
         } else {
             return new Response(JSON.stringify({ success: false, message: 'Invalid token.' }));
         }
-    // }
-    //     else {
-    //     return new Response(JSON.stringify({ success: false, message: 'No user found.' }));
-    // }
-} catch (error) {
-    console.error('Error during user retrieval:', error);
-    return new Response(JSON.stringify({ success: false, message: 'Internal server error.' }), { status: 500 });
-}
-}
 
-
+    } catch (error) {
+        console.error('Error during user retrieval:', error);
+        return new Response(JSON.stringify({ success: false, message: 'Internal server error.' }), { status: 500 });
+    }
+}

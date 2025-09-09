@@ -42,20 +42,83 @@ interface Account {
   bankName: string;
   status: string;
   openDate: string;
+  userId?: number;
 }
 
+ interface AccountApi {
+  Id: number;
+  userid: number;
+  bankid: number;
+  accountnumber: string;
+  accounttype: string;
+  balance: number;
+  createdat: string;
+  status: string;
+  bank_name: string;
+  owner_name: string;
+}
+
+interface CardApi {
+  id: number;
+  card_number: string;
+  account_no: string;
+  card_type: string;
+  expiry_date: string;
+  cvv: string;
+  cardholder_name: string;
+  pin: string;
+  status: string;
+  issued_at: string;
+}
+
+interface Card {
+  id: number;
+  accountNo: string;
+  cardNumber: string;
+  fullCardNumber: string;
+  cardType: string;
+  ownerName: string;
+  expiryDate: string;
+  cvv: string;
+  status: string;
+  issuedAt: string;
+  dailyLimit?: number;
+  monthlyLimit?: number;
+}
+interface UserApi {
+        Id: number;
+        Name: string;
+        Email: string;
+        Status: string;
+        role: string; // "user" | "admin" | "premium" etc.
+        LastLogin: string;
+        total_balance: string; // Formatted currency string
+        Phone: string;
+        accountsCount: number;
+        JoinDate: string;
+        total_accounts: number;
+    }
+interface BankApi {
+  id: number;
+  name: string;
+  code: string;
+  address: string;
+  contactemail: string;
+  createdat: string;
+  status: string;
+}
 
 export default function AccountManagement() {
   const [activeTab, setActiveTab] = useState("accounts")
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedAccount, setSelectedAccount] = useState<any>(null)
-  const [selectedCard, setSelectedCard] = useState<any>(null)
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null)
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null)
   const [isAddAccountOpen, setIsAddAccountOpen] = useState(false)
   const [isAddCardOpen, setIsAddCardOpen] = useState(false)
   const [accounts, setAccounts] = useState<Account[]>([])
-  const [cards, setCards] = useState<any[]>([])
-  const [users, setUsers] = useState<any[]>([])
-  const [banks, setBanks] = useState<any[]>([])
+  const [cards, setCards] = useState<Card[]>([])
+  const [users, setUsers] = useState<UserApi[]>([])
+  const [banks, setBanks] = useState<BankApi[]>([])
   const [userid, setUserId] = useState("")
   const [accountNumber, setAccountNumber] = useState("")
   const [accounttype, setAccountType] = useState("")
@@ -71,8 +134,8 @@ export default function AccountManagement() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [isEditAccountOpen, setIsEditAccountOpen] = useState(false)
   const [isEditCardOpen, setIsEditCardOpen] = useState(false)
-  const [editingAccount, setEditingAccount] = useState<any>(null)
-  const [editingCard, setEditingCard] = useState<any>(null)
+  const [editingAccount, setEditingAccount] = useState<Account | null>(null)
+  const [editingCard, setEditingCard] = useState<Card | null>(null)
   const [editUserId, setEditUserId] = useState("")
   const [editAccountNumber, setEditAccountNumber] = useState("")
   const [editAccountType, setEditAccountType] = useState("")
@@ -87,7 +150,7 @@ export default function AccountManagement() {
   const [editCardStatus, setEditCardStatus] = useState("active")
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     open: boolean
-    item: any
+    item: Account | Card | null
     type: "account" | "card"
   }>({ open: false, item: null, type: "account" })
   const [isDeleting, setIsDeleting] = useState(false)
@@ -95,7 +158,7 @@ export default function AccountManagement() {
 
   const [restoreConfirmation, setRestoreConfirmation] = useState<{
     open: boolean
-    item: any
+    item: Account | Card | null
     type: "account" | "card"
   }>({ open: false, item: null, type: "account" })
   const [isRestoring, setIsRestoring] = useState(false)
@@ -115,7 +178,7 @@ export default function AccountManagement() {
     const response = await axios.get('/api/admin/cards');
     if (response.status === 200) {
       console.log('Fetched cards:', response.data.data);
-      const mapCards = response.data.data.map((card: any) => ({
+      const mapCards = response.data.data.map((card: CardApi) => ({
         id: card.id,
         accountNo: card.account_no,
         cardNumber: card.card_number,
@@ -136,7 +199,7 @@ export default function AccountManagement() {
     if (response.status === 200) {
       console.log('Fetched accounts:', response.data.data);
 
-      const mapAccounts = response.data.data.map((account: any) => ({
+      const mapAccounts = response.data.data.map((account: AccountApi) => ({
         id: account.Id,
         accountNumber: account.accountnumber,
         userId: account.userid,
@@ -270,7 +333,7 @@ export default function AccountManagement() {
       }
     }
 
-    const bank1 = banks.find((bank: any) => bank.id === Number(bankid));
+    const bank1 = banks.find((bank: BankApi) => bank.id === Number(bankid));
     const bankCode = bank1 ? bank1.code : "";
     const newCode = bankCode + generateSixDigitServer();
     setAccountNumber(newCode.toString());
@@ -341,9 +404,10 @@ export default function AccountManagement() {
       debugger;
       if (deleteConfirmation.type === "account") {
         // console.log("Deleting account:", deleteConfirmation.item);
+        const accountItem = deleteConfirmation.item as Account;
 
         const response = await axios.delete('/api/admin/accounts', {
-          data: { accountnumber: deleteConfirmation.item.accountNumber }
+          data: { accountnumber: accountItem.accountNumber }
         });
         if (response.data.success) {
           toast.success(response.data.message);
@@ -352,8 +416,9 @@ export default function AccountManagement() {
           toast.error(response.data.message || "Failed to delete account");
         }
       } else {
+        const cardItem = deleteConfirmation.item as Card;
         const response = await axios.delete('/api/admin/cards', {
-          data: { card_number: deleteConfirmation.item.cardNumber }
+          data: { card_number: cardItem.cardNumber }
         });
         if (response.data.success) {
           toast.success("Card deleted successfully.");
@@ -379,10 +444,11 @@ export default function AccountManagement() {
     setIsRestoring(true);
     try {
       console.log("Restoring account:", restoreConfirmation.item);
-      if (restoreConfirmation.type === "account") {
-        const response = await axios.delete("/api/admin/accounts", {
-           data: { accountnumber: restoreConfirmation.item.accountNumber }
-        });
+    if (restoreConfirmation.type === "account") {
+      const accountItem = restoreConfirmation.item as Account;
+      const response = await axios.delete("/api/admin/accounts", {
+        data: { accountnumber: accountItem.accountNumber }
+      });
         if (response.data?.success) {
           toast.success(response.data.message || "Account restored successfully.");
           fetchAccounts();
@@ -391,9 +457,10 @@ export default function AccountManagement() {
         }
       } else {
         debugger;
-        const response = await axios.delete('/api/admin/cards', {
-         data: { card_number: restoreConfirmation.item.cardNumber }
-        });
+      const cardItem = restoreConfirmation.item as Card;
+      const response = await axios.delete('/api/admin/cards', {
+      data: { card_number: cardItem.cardNumber }
+      });
         if (response.data?.success) {
           toast.success(response.data.message || "Card restored successfully.");
           fetchCards();
@@ -411,7 +478,7 @@ export default function AccountManagement() {
     }
   }
 
-  const handleEditAccount = (account: any) => {
+  const handleEditAccount = (account: Account) => {
   // Populate controlled edit form state and open edit dialog
   setEditingAccount(account);
   setEditUserId(account.userId ? String(account.userId) : "")
@@ -423,7 +490,7 @@ export default function AccountManagement() {
   setIsEditAccountOpen(true)
 };
 
-  const handleEditCard = (card: any) => {
+  const handleEditCard = (card: Card) => {
     setEditingCard(card)
     setEditCardAccountNumber(card.accountNo ? String(card.accountNo) : "")
     setEditCardType(card.cardType || "")
@@ -481,8 +548,8 @@ export default function AccountManagement() {
                             <SelectValue placeholder="Select user" />
                           </SelectTrigger>
                           <SelectContent  >
-                            {users.map((user: any) => (
-                              <SelectItem key={user.Id} value={user.Id}>
+                            {users.map((user: UserApi) => (
+                              <SelectItem key={user.Id} value={user.Id.toString()}>
                                 {user.Name}
                               </SelectItem>
                             ))}
@@ -497,8 +564,8 @@ export default function AccountManagement() {
                             <SelectValue placeholder="Select bank" />
                           </SelectTrigger>
                           <SelectContent>
-                            {banks.map((bank: any) => (
-                              <SelectItem key={bank.id} value={bank.id}>
+                            {banks.map((bank: BankApi) => (
+                              <SelectItem key={bank.id} value={bank.id.toString()}>
                                 {bank.name}
                               </SelectItem>
                             ))}
@@ -914,7 +981,7 @@ export default function AccountManagement() {
                             </div>
                             <div>
                               <p className="font-medium text-gray-900 dark:text-white">{card.cardNumber}</p>
-                              <p className="text-sm text-gray-500 dark:text-gray-400">Issued {card.issueDate}</p>
+                              <p className="text-sm text-gray-500 dark:text-gray-400">Issued {card.issuedAt}</p>
                             </div>
                           </div>
                         </TableCell>
@@ -1122,9 +1189,14 @@ export default function AccountManagement() {
             : "Are you sure you want to delete this payment card? This will permanently deactivate the card and remove all associated data."
         }
         itemName={
+          // compute a safe item name based on the current type to avoid accessing properties
           deleteConfirmation.type === "account"
-            ? `${deleteConfirmation.item?.accountNumber} - ${deleteConfirmation.item?.ownerName}`
-            : `${deleteConfirmation.item?.cardNumber} - ${deleteConfirmation.item?.ownerName}`
+            ? deleteConfirmation.item
+              ? `${(deleteConfirmation.item as Account).accountNumber} - ${(deleteConfirmation.item as Account).ownerName}`
+              : ""
+            : deleteConfirmation.item
+            ? `${(deleteConfirmation.item as Card).cardNumber} - ${(deleteConfirmation.item as Card).ownerName}`
+            : ""
         }
         onConfirm={handleDeleteItem}
         isLoading={isDeleting}
@@ -1143,8 +1215,12 @@ export default function AccountManagement() {
         }
         itemName={
           restoreConfirmation.type === "account"
-            ? `${restoreConfirmation.item?.accountNumber} - ${restoreConfirmation.item?.ownerName}`
-            : `${restoreConfirmation.item?.cardNumber} - ${restoreConfirmation.item?.ownerName}`
+            ? restoreConfirmation.item
+              ? `${(restoreConfirmation.item as Account).accountNumber} - ${(restoreConfirmation.item as Account).ownerName}`
+              : ""
+            : restoreConfirmation.item
+            ? `${(restoreConfirmation.item as Card).cardNumber} - ${(restoreConfirmation.item as Card).ownerName}`
+            : ""
         }
         onConfirm={handleRestoreItem}
         isLoading={isRestoring}
@@ -1202,7 +1278,7 @@ export default function AccountManagement() {
                         <SelectValue placeholder="Select user" />
                       </SelectTrigger>
                       <SelectContent>
-                        {users.map((user: any) => (
+                        {users.map((user: UserApi) => (
                           <SelectItem key={user.Id} value={String(user.Id)}>
                             {user.Name}
                           </SelectItem>
@@ -1217,7 +1293,7 @@ export default function AccountManagement() {
                         <SelectValue placeholder="Select bank" />
                       </SelectTrigger>
                       <SelectContent>
-                        {banks.map((bank: any) => (
+                        {banks.map((bank: BankApi) => (
                           <SelectItem key={bank.id} value={String(bank.id)}>
                             {bank.name}
                           </SelectItem>
@@ -1474,7 +1550,7 @@ export default function AccountManagement() {
               try {
                 const expiry = editCardExpiryYear && editCardExpiryMonth ? `${editCardExpiryYear}-${editCardExpiryMonth}-01` : undefined
                 const res = await axios.put('/api/admin/cards', {
-                  card_number: editingCard.cardNumber,
+                  card_number: editingCard?.cardNumber,
                   account_no: editCardAccountNumber,
                   card_type: editCardType,
                   cardholder_name: editCardHolderName,

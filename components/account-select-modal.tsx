@@ -85,6 +85,20 @@ interface AccountSelectModalProps {
   onSelectAccount: (accountId: string) => void
 }
 
+
+ interface AccountApi {
+  Id: number;
+  userid: number;
+  bankid: number;
+  accountnumber: string;
+  accounttype: string;
+  balance: number;
+  createdat: string;
+  status: string;
+  bank_name: string;
+  owner_name: string;
+}
+
 const AccountSelectModal = ({
   open,
   onOpenChange,
@@ -110,11 +124,11 @@ const AccountSelectModal = ({
             </h3>
 
             <div className="space-y-2">
-              {Array.isArray(accounts) && Array.isArray(banks) && accounts.map((account: any,index: number) => {
+              {Array.isArray(accounts) && Array.isArray(banks) && accounts.map((account, index) => {
                 const bankObj = banks.find(b => b.id === account.bankid);
                 return (
                   <button
-                    key={`${account.Id}-{index}`}
+                    key={`${account.Id}-${index}`}
                     onClick={() => onSelectAccount(account.accountnumber)}
                     className={cn(
                       "w-full flex items-center gap-3 p-3 rounded-lg transition-colors text-left",

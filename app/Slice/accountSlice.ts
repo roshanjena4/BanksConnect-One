@@ -1,8 +1,19 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 
+interface AccountApi{
+  Id: number;
+  userid: number;
+  bankid: number;
+  accountnumber: string;
+  accounttype: string;
+  balance: number;
+  createdat: string;
+  status: string;
+}
+
 export interface AccountState {
-  accountData: unknown | null;
+  accountData: AccountApi[] | null;
   loading: boolean;
 }
 
@@ -15,7 +26,7 @@ export const accountSlice = createSlice({
   name: 'account',
   initialState,
   reducers: {
-    setAccountData: (state, action: PayloadAction<unknown>) => {
+    setAccountData: (state, action: PayloadAction<AccountApi[] | null>) => {
       state.accountData = action.payload;
       state.loading = false;
     },

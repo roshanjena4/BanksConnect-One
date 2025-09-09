@@ -18,6 +18,16 @@ import { Button } from './ui/button'
 import ThemeToggleButton from "@/components/ui/theme-toggle-button"
 import FlipLink from "@/components/ui/text-effect-flipper"
 
+interface User {
+  id: number;
+  username: string;
+  Name: string;
+  Email: string;
+  email: string;
+  token: string;
+  role: string;
+}
+
 
 
 interface DashboardLayoutProps {
@@ -123,11 +133,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     <div className="flex items-center gap-3">
                         <Avatar className="w-10 h-10">
                             {/* <AvatarImage src="/placeholder.svg?height=40&width=40" /> */}
-                            <AvatarFallback className="bg-blue-600 text-white">{user?.Name?.split(' ').map((word: string) => word[0]).join('').toUpperCase()}</AvatarFallback>
+                            <AvatarFallback className="bg-blue-600 text-white">{(user as User)?.Name?.split(' ').map((word: string) => word[0]).join('').toUpperCase()}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user?.Name}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.Email}</p>
+                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{(user as User)?.Name}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{(user as User)?.Email}</p>
                         </div>
                         <button onClick={() => handleLogout()}>
                             <LogOut className='w-5 h-5 text-blue-600 dark:text-blue-800 cursor-pointer' />

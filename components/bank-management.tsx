@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, Search, Edit, Trash2, Eye, Building2, MapPin, Phone, Globe, Mail, RotateCcw } from "lucide-react"
+import { Plus, Search, Edit, Trash2, Eye, Building2, MapPin, Mail, RotateCcw } from "lucide-react"
 import axios from "axios"
 import { HashLoader } from "react-spinners"
 import { FormSchemaCreateBank } from "@/Helper/validate"
@@ -27,61 +27,6 @@ import DeleteConfirmationDialog from "@/components/delete-confirmation-dialog"
 import RestoreConfirmationDialog from "./restore-confirmation-dialog"
 
 
-// Mock bank data
-// const banks = [
-//   {
-//     id: 1,
-//     name: "Chase Bank",
-//     code: "CHASE",
-//     type: "Commercial",
-//     status: "active",
-//     country: "United States",
-//     headquarters: "New York, NY",
-//     website: "chase.com",
-//     phone: "+1-800-935-9935",
-//     swiftCode: "CHASUS33",
-//     routingNumber: "021000021",
-//     totalCustomers: 1247,
-//     totalAssets: "$3.2T",
-//     establishedYear: 1799,
-//     description: "JPMorgan Chase & Co. is an American multinational investment bank and financial services company.",
-//   },
-//   {
-//     id: 2,
-//     name: "Bank of America",
-//     code: "BOA",
-//     type: "Commercial",
-//     status: "active",
-//     country: "United States",
-//     headquarters: "Charlotte, NC",
-//     website: "bankofamerica.com",
-//     phone: "+1-800-432-1000",
-//     swiftCode: "BOFAUS3N",
-//     routingNumber: "011000138",
-//     totalCustomers: 892,
-//     totalAssets: "$2.4T",
-//     establishedYear: 1904,
-//     description:
-//       "Bank of America Corporation is an American multinational investment bank and financial services company.",
-//   },
-//   {
-//     id: 3,
-//     name: "Wells Fargo",
-//     code: "WF",
-//     type: "Commercial",
-//     status: "maintenance",
-//     country: "United States",
-//     headquarters: "San Francisco, CA",
-//     website: "wellsfargo.com",
-//     phone: "+1-800-869-3557",
-//     swiftCode: "WFBIUS6S",
-//     routingNumber: "121000248",
-//     totalCustomers: 654,
-//     totalAssets: "$1.9T",
-//     establishedYear: 1852,
-//     description: "Wells Fargo & Company is an American multinational financial services company.",
-//   },
-// ]
 
 export default function BankManagement() {
   interface Bank {
@@ -92,6 +37,26 @@ export default function BankManagement() {
     status: string;
     country: string;
     headquarters: string;
+    Email: string;
+    swiftCode: string;
+    routingNumber: string;
+    totalCustomers: number;
+    totalAssets: string;
+    establishedYear: number;
+  }
+  interface BankApi {
+    id: number;
+    name: string;
+    code: string;
+    type: string;
+    status: string;
+    country: string;
+    headquarters: string;
+    contactemail: string;
+    address: string;
+    createdat: string;
+    total_accounts: number;
+    total_balance: string;
     swiftCode: string;
     routingNumber: string;
     totalCustomers: number;
@@ -101,7 +66,7 @@ export default function BankManagement() {
 
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
-  const [selectedBank, setSelectedBank] = useState<any>(null)
+  const [selectedBank, setSelectedBank] = useState<Bank | null>(null)
   const [isAddBankOpen, setIsAddBankOpen] = useState(false)
   const [isEditBankOpen, setIsEditBankOpen] = useState(false)
   const [banks, setBanks] = useState<Bank[]>([])
@@ -112,14 +77,14 @@ export default function BankManagement() {
   const [location, setLocation] = useState("")
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
     open: boolean
-    bank: any
+    bank: Bank | null
   }>({ open: false, bank: null })
   const [isDeleting, setIsDeleting] = useState(false)
   const debounceSearch = useDebounce(searchTerm, 500);
 
   const [restoreConfirmation, setRestoreConfirmation] = useState<{
     open: boolean
-    bank: any
+    bank: Bank | null
   }>({ open: false, bank: null })
   const [isRestoring, setIsRestoring] = useState(false)
 
@@ -134,7 +99,7 @@ export default function BankManagement() {
     }
 
     console.log(response.data);
-    const mapBanks = response.data.data.map((bank: any) => ({
+    const mapBanks = response.data.data.map((bank: BankApi) => ({
       id: bank.id,
       name: bank.name,
       code: bank.code,
@@ -246,7 +211,7 @@ export default function BankManagement() {
     console.log("Form submitted")
   }
 
-  const handleEditBank = (bank: any) => {
+  const handleEditBank = (bank: Bank) => {
     setIsEditBankOpen(true);
     setBankName(bank.name ? bank.name : "");
     setBankEmail(bank.Email ? bank.Email : "");
