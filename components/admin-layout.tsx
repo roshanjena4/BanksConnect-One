@@ -67,7 +67,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded flex items-center justify-center">
-                <Image src="/symbol.png" alt="Next.js Logo" width={26} height={26} />
+                <Image src="/Symbol.png" alt="Next.js Logo" width={26} height={26} />
               </div>
               <div className="flex flex-col">
                 <span className="lg:text-xl sm:text-lg font-semibold text-gray-900 dark:text-white">Next Bank</span>
@@ -148,7 +148,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             </Button>
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded flex items-center justify-center">
-                <Image src="/symbol.png" alt="Next.js Logo" width={26} height={26} />
+                <Image src="/Symbol.png" alt="Next.js Logo" width={26} height={26} />
               </div>
               <div className="flex flex-col">
                 <span className="text-lg font-semibold text-gray-900 dark:text-white">Next Bank</span>

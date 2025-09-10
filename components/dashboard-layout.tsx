@@ -76,7 +76,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <div className="w-8 h-8  rounded flex items-center justify-center">
-                                <Image src="/symbol.png" alt="Next.js Logo" width={26} height={26} />
+                                <Image src="/Symbol.png" alt="Next.js Logo" width={26} height={26} />
                             </div>
                             <FlipLink href="/">NextBank</FlipLink>
                         </div>

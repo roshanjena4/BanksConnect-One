@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Plus, MoreHorizontal } from 'lucide-react'
+import { Plus, MoreHorizontal, ArrowUpRight, ArrowDownLeft, Calendar, Tag } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
@@ -210,63 +210,106 @@ const HomeContent = () => {
                 {/* Transactions */}
                 <div className="space-y-4">
                   {filteredTransactions.length === 0 ? (
-                    <div className="text-gray-500">No transactions for this bank.</div>
+                    <div className="text-gray-500 border rounded-lg p-6 text-center bg-gray-50 dark:bg-gray-800/40 dark:border-gray-700">
+                      No transactions for this bank.
+                    </div>
                   ) : (
                     filteredTransactions.slice(0, 5).map((tx, idx) => (
                       <div
                         key={`${tx.id}-${tx.transaction_time}-${idx}`}
-                        className={`grid grid-cols-1 sm:grid-cols-5 gap-4 items-center py-2 rounded-lg text-wrap ${
-                          tx.transaction_type === 'credit' ? 'bg-green-50' : 'bg-red-50'
-                        }`}
+                        className={`relative flex sm:grid sm:grid-cols-5 items-center gap-3 sm:gap-4 p-2 sm:p-3 rounded-lg sm:rounded-xl border bg-white/60 dark:bg-gray-900/50 dark:border-gray-800 hover:shadow-sm transition`}
                       >
-                        {/* Transaction Description */}
-                        <div className="flex flex-col px-2">
-                          <span className="font-medium text-gray-900">{tx.description}</span>
-                          {/* Mobile: Show labels */}
-                          <span className="sm:hidden text-xs text-gray-500 mt-1">Transaction</span>
+                        {/* Accent bar by transaction type (desktop only) */}
+                        <span
+                          aria-hidden
+                          className={`hidden sm:block absolute left-0 top-0 h-full w-1 rounded-l-xl ${tx.transaction_type === 'credit' ? 'bg-green-500' : 'bg-red-500'}`}
+                        />
+
+                        {/* Mobile compact layout */}
+                        <div className="sm:hidden w-full">
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className={`${tx.transaction_type === 'credit' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'} w-8 h-8 rounded-full flex items-center justify-center shrink-0`}>
+                                {tx.transaction_type === 'credit' ? (
+                                  <ArrowUpRight className="w-4 h-4" />
+                                ) : (
+                                  <ArrowDownLeft className="w-4 h-4" />
+                                )}
+                              </div>
+                              <div className="min-w-0">
+                                <span className="font-medium text-gray-900 dark:text-white block truncate">{tx.description}</span>
+                                <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-0.5">
+                                  <Calendar className="w-3.5 h-3.5" />
+                                  {new Date(tx.transaction_time).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' })}
+                                </div>
+                              </div>
+                            </div>
+                            <div className={`text-sm font-semibold ${tx.transaction_type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
+                              {tx.transaction_type === 'credit' ? '+' : '-'}₹{Math.abs(tx.amount).toLocaleString()}
+                            </div>
+                          </div>
+                          <div className="mt-2 flex items-center justify-between">
+                            <Badge
+                              className={`rounded-full px-2 py-0.5 text-[10px] font-medium border ${
+                                tx.status === 'Success'
+                                  ? 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/40 dark:text-green-200 dark:border-green-800/60'
+                                  : tx.status === 'Processing'
+                                  ? 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/40 dark:text-yellow-200 dark:border-yellow-800/60'
+                                  : 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/40 dark:text-red-200 dark:border-red-800/60'
+                              }`}
+                            >
+                              ● {tx.status}
+                            </Badge>
+                            <Badge
+                              variant="outline"
+                              className="rounded-full px-2 py-0.5 text-[10px] border-blue-200 text-blue-700 bg-blue-50 dark:border-blue-800 dark:text-blue-200 dark:bg-blue-950/40"
+                            >
+                              {tx.category || 'General'}
+                            </Badge>
+                          </div>
                         </div>
-                        {/* Amount */}
-                        <div className={`font-semibold ${tx.transaction_type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
-                          {tx.transaction_type === 'credit' ? '+' : ''}₹{Math.abs(tx.amount).toLocaleString()}
-                          <span className="sm:hidden text-xs text-gray-500 block mt-1">Amount</span>
+
+                        {/* Desktop grid layout */}
+                        <div className="hidden sm:flex items-center gap-3 px-2">
+                          <div className={`${tx.transaction_type === 'credit' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'} w-9 h-9 rounded-full flex items-center justify-center shrink-0`}>
+                            {tx.transaction_type === 'credit' ? (
+                              <ArrowUpRight className="w-4 h-4" />
+                            ) : (
+                              <ArrowDownLeft className="w-4 h-4" />
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <span className="font-medium text-gray-900 dark:text-white block truncate">{tx.description}</span>
+                          </div>
                         </div>
-                        {/* Status */}
-                        <div>
+                        <div className={`hidden sm:block font-semibold ${tx.transaction_type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
+                          {tx.transaction_type === 'credit' ? '+' : '-'}₹{Math.abs(tx.amount).toLocaleString()}
+                        </div>
+                        <div className="hidden sm:block">
                           <Badge
-                            variant={
+                            className={`rounded-full px-2.5 py-1 text-xs font-medium border ${
                               tx.status === 'Success'
-                                ? 'default'
+                                ? 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/40 dark:text-green-200 dark:border-green-800/60'
                                 : tx.status === 'Processing'
-                                ? 'secondary'
-                                : 'destructive'
-                            }
-                            className={
-                              tx.status === 'Success'
-                                ? 'bg-green-100 text-green-800'
-                                : tx.status === 'Processing'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-red-100 text-red-800 rounded-full'
-                            }
+                                ? 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/40 dark:text-yellow-200 dark:border-yellow-800/60'
+                                : 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/40 dark:text-red-200 dark:border-red-800/60'
+                            }`}
                           >
                             ● {tx.status}
                           </Badge>
-                          <span className="sm:hidden text-xs text-gray-500 block mt-1">Status</span>
                         </div>
-                        {/* Date */}
-                        <div className="text-gray-600">
-                          {new Date(tx.transaction_time).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: '2-digit',
-                          })}
-                          <span className="sm:hidden text-xs text-gray-500 block mt-1">Date</span>
+                        <div className="hidden sm:flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                          <Calendar className="w-4 h-4 text-gray-400" />
+                          {new Date(tx.transaction_time).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' })}
                         </div>
-                        {/* Category */}
-                        <div>
-                          <Badge variant="outline" className="text-blue-600 border-blue-600 rounded-full">
-                            ● {tx.category}
+                        <div className="hidden sm:flex items-center gap-2">
+                          <Tag className="w-4 h-4 text-blue-500" />
+                          <Badge
+                            variant="outline"
+                            className="rounded-full border-blue-200 text-blue-700 bg-blue-50 dark:border-blue-800 dark:text-blue-200 dark:bg-blue-950/40"
+                          >
+                            {tx.category || 'General'}
                           </Badge>
-                          <span className="sm:hidden text-xs text-gray-500 block mt-1">Category</span>
                         </div>
                       </div>
                     ))

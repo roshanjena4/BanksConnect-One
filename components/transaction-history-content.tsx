@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { ChevronDown, Filter, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronDown, Filter, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownLeft, Calendar, Tag } from 'lucide-react'
 import AccountSelectModal from '@/components/account-select-modal'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/app/store'
@@ -135,8 +135,8 @@ interface TransactionApi {
           </Button>
         </CardHeader>
         <CardContent>
-          {/* Table Headers */}
-          <div className="grid grid-cols-5 gap-4 text-sm font-medium text-gray-500 mb-4 pb-2 border-b">
+          {/* Table Headers (desktop only) */}
+          <div className="hidden sm:grid grid-cols-5 gap-4 text-sm font-medium text-gray-500 mb-4 pb-2 border-b">
             <div>Transaction</div>
             <div>Status</div>
             <div>Date</div>
@@ -147,49 +147,98 @@ interface TransactionApi {
           {/* Transactions */}
           <div className="space-y-4">
             {paginatedTransactions?.map((transaction: TransactionApi, index: number) => (
-              <div key={`${transaction.id}-${index}`} className={`grid grid-cols-5 gap-4 items-center py-3 hover:bg-gray-50 rounded-lg px-2 ${transaction.transaction_type === 'credit' ? 'bg-green-50' : 'bg-red-50'}`}>
-                <div className="flex items-center gap-3">
-                  {/* {transaction.avatar ? (
-                  <Avatar className="w-10 h-10">
-                    <AvatarImage src={transaction.avatar} alt={transaction.merchant || 'Avatar'} />
-                    <AvatarFallback>
-                    {transaction.merchant?.charAt(0) || 'A'}
-                    </AvatarFallback>
-                  </Avatar>
-                  ) : ( */}
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${ 'bg-gray-200'}`}>
-                    <span className="text-lg">
-                    {transaction.description?.charAt(0) || 'T'}
-                    </span>
+              <div
+                key={`${transaction.id}-${index}`}
+                className="relative flex sm:grid sm:grid-cols-5 items-center gap-3 sm:gap-4 p-2 sm:p-3 rounded-lg sm:rounded-xl border bg-white/60 dark:bg-gray-900/50 dark:border-gray-800 hover:shadow-sm transition"
+              >
+                {/* Accent bar (desktop only) */}
+                <span
+                  aria-hidden
+                  className={`hidden sm:block absolute left-0 top-0 h-full w-1 rounded-l-xl ${transaction.transaction_type === 'credit' ? 'bg-green-500' : 'bg-red-500'}`}
+                />
+
+                {/* Mobile compact */}
+                <div className="sm:hidden w-full">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`${transaction.transaction_type === 'credit' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'} w-8 h-8 rounded-full flex items-center justify-center shrink-0`}>
+                        {transaction.transaction_type === 'credit' ? (
+                          <ArrowUpRight className="w-4 h-4" />
+                        ) : (
+                          <ArrowDownLeft className="w-4 h-4" />
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <span className="font-medium text-gray-900 dark:text-white block truncate">{transaction.description}</span>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-0.5">
+                          <Calendar className="w-3.5 h-3.5" />
+                          {new Date(transaction.transaction_time).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' })}
+                        </div>
+                      </div>
+                    </div>
+                    <div className={`text-sm font-semibold ${transaction.transaction_type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
+                      {transaction.transaction_type === 'credit' ? '+' : '-'}₹{Math.abs(transaction.amount).toLocaleString()}
+                    </div>
                   </div>
-                  {/* )} */}
-                  <div>
-                  <span className="font-medium text-gray-900">{ transaction.description}</span>
-                  {/* {transaction.description && (
-                    <div className="text-xs text-gray-500">{transaction.description}</div>
-                  )} */}
+                  <div className="mt-2 flex items-center justify-between">
+                    <Badge
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-medium border ${
+                        transaction.status === 'Success'
+                          ? 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/40 dark:text-green-200 dark:border-green-800/60'
+                          : transaction.status === 'Processing'
+                          ? 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/40 dark:text-yellow-200 dark:border-yellow-800/60'
+                          : 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/40 dark:text-red-200 dark:border-red-800/60'
+                      }`}
+                    >
+                      ● {transaction.status}
+                    </Badge>
+                    <Badge
+                      variant="outline"
+                      className="rounded-full px-2 py-0.5 text-[10px] border-blue-200 text-blue-700 bg-blue-50 dark:border-blue-800 dark:text-blue-200 dark:bg-blue-950/40"
+                    >
+                      {transaction.category || 'General'}
+                    </Badge>
                   </div>
                 </div>
-                <div>
+
+                {/* Desktop grid */}
+                <div className="hidden sm:flex items-center gap-3 px-2">
+                  <div className={`${transaction.transaction_type === 'credit' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'} w-9 h-9 rounded-full flex items-center justify-center shrink-0`}>
+                    {transaction.transaction_type === 'credit' ? (
+                      <ArrowUpRight className="w-4 h-4" />
+                    ) : (
+                      <ArrowDownLeft className="w-4 h-4" />
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <span className="font-medium text-gray-900 dark:text-white block truncate">{transaction.description}</span>
+                  </div>
+                </div>
+                <div className="hidden sm:block">
                   <Badge
-                    variant={transaction.status === 'Success' ? 'default' : transaction.status === 'Processing' ? 'secondary' : 'destructive'}
-                    className={
-                      transaction.status === 'Success' ? 'bg-green-100 text-green-800' :
-                        transaction.status === 'Processing' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
-                    }
+                    className={`rounded-full px-2.5 py-1 text-xs font-medium border ${
+                      transaction.status === 'Success'
+                        ? 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/40 dark:text-green-200 dark:border-green-800/60'
+                        : transaction.status === 'Processing'
+                        ? 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/40 dark:text-yellow-200 dark:border-yellow-800/60'
+                        : 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/40 dark:text-red-200 dark:border-red-800/60'
+                    }`}
                   >
                     ● {transaction.status}
                   </Badge>
                 </div>
-                <div className="text-gray-600">{new Date(transaction.transaction_time).toLocaleString()}</div>
-                <div>
-                  <Badge variant="outline" className="text-blue-600 border-blue-600">
-                    {transaction.category}
+                <div className="hidden sm:flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                  <Calendar className="w-4 h-4 text-gray-400" />
+                  {new Date(transaction.transaction_time).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' })}
+                </div>
+                <div className="hidden sm:flex items-center gap-2">
+                  <Tag className="w-4 h-4 text-blue-500" />
+                  <Badge variant="outline" className="rounded-full border-blue-200 text-blue-700 bg-blue-50 dark:border-blue-800 dark:text-blue-200 dark:bg-blue-950/40">
+                    {transaction.category || 'General'}
                   </Badge>
                 </div>
-                <div className={`text-right font-semibold ${transaction.transaction_type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
-                  {transaction.transaction_type === 'credit' ? '+' : '-'}₹{Math.abs(transaction.amount).toFixed(2)}
+                <div className={`hidden sm:block text-right font-semibold ${transaction.transaction_type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
+                  {transaction.transaction_type === 'credit' ? '+' : '-'}₹{Math.abs(transaction.amount).toLocaleString()}
                 </div>
               </div>
             ))}

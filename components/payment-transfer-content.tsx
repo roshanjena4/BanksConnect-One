@@ -118,6 +118,7 @@ const PaymentTransferContent = () => {
                     <SelectItem value="Entertainment">Entertainment</SelectItem>
                     <SelectItem value="Transfer">Transfer</SelectItem>
                     <SelectItem value="Loan Payment">Loan Payment</SelectItem>
+                    <SelectItem value="Salary">Salary</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -156,7 +157,7 @@ const PaymentTransferContent = () => {
               </div> */}
 
               <div>
-                <Label htmlFor="account-number" className="text-sm font-medium">Recipient&apos;s Bank Account Number</Label>
+                <Label htmlFor="account-number" className="text-sm font-medium">Recipient&apos;s Bank Account Number(Optional)</Label>
                 <Input
                   id="account-number"
                   placeholder="Enter the account number"
@@ -185,7 +186,9 @@ const PaymentTransferContent = () => {
           {/* Transfer Button */}
           {/* <SlideButton ></SlideButton> */}
           <Button disabled={pending} className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg font-medium">
-            {pending ? "Transferring..." : "Transfer Funds"}
+            {pending
+              ? (category === 'Salary' ? 'Adding Salary...' : 'Transferring...')
+              : (category === 'Salary' ? 'Add Salary' : 'Transfer Funds')}
           </Button>
         </div>
       </form>

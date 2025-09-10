@@ -139,6 +139,7 @@ export default function ConnectBankForm() {
                                             placeholder="Enter bank code"
                                             value={bankCode}
                                             onChange={(e) => setBankCode(e.target.value)}
+                                            className="bg-gray-50 dark:bg-gray-800 "
                                         />
                                         {state?.errors?.bankCode && <p className='text-red-500 text-sm'>{state.errors.bankCode}</p>}
                                     </div>
