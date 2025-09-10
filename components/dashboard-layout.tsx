@@ -156,7 +156,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         </Button>
                         <div className="flex items-center gap-2">
                             <div className="w-6 h-6  rounded flex items-center justify-center">
-                                <Image src="/symbol.png" alt="Next.js Logo" width={26} height={26} />
+                                <Image src="/Symbol.png" alt="Next.js Logo" width={26} height={26} />
                             </div>
                             <span className="text-lg font-semibold text-gray-900 dark:text-white">Next Bank</span>
                         </div>
