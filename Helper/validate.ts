@@ -120,7 +120,10 @@ export const FormSchemaConnectBank = z.object({
   accountType: z.string().min(2, { message: 'Please select an account type.' }).max(20, { message: 'Account type must be at most 20 characters long.' }).trim(),
   amount: z.string().min(1, { message: 'Please enter an amount.' }).max(10, { message: 'Amount must be at most 10 characters long.' }).trim(),
   cardNumber: z.string().min(16, { message: 'Please enter a valid card number.' }).max(19, { message: 'Card number must be at most 19 characters long.' }).trim(),
-  expirationDate: z.string().min(3, { message: 'Please enter a valid expiration date.' }).max(5, { message: 'Expiration date must be at most 5 characters long.' }).trim(),
+  expirationDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'Please enter a valid expiration date.' }).refine((val) => {
+    const d = new Date(val);
+    return !Number.isNaN(d.getTime()) && d > new Date();
+  }, { message: 'Expiration date must be in the future.' }).trim(),
   cvv: z.string().min(3, { message: 'Please enter a valid cvv.' }).max(4, { message: 'Cvv must be at most 4 characters long.' }).trim(),
   cardType: z.string().min(2, { message: 'Please select a card type.' }).max(20, { message: 'Card type must be at most 20 characters long.' }).trim(),
 })
