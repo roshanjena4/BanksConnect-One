@@ -311,8 +311,8 @@ export default function ConnectBankForm() {
                                 <Button disabled={isLoading}
                                     className="bg-blue-600 hover:bg-blue-700 text-white px-8"
                                 >
-                                    Save
-                                    {isLoading ? "..." : ""}
+                                    Send 
+                                    {isLoading ? "ing..." : ""}
                                 </Button>
                             </div>
 
