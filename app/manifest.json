@@ -1,0 +1,30 @@
+{
+    "name": "BankOne - Trusted Financial Partner",
+    "short_name": "BankOne",
+    "theme_color": "#35155D",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "orientation": "any",
+    "scope": "/",
+    "start_url": "/",
+    "icons": [
+        {
+            "src": "/bank(1).png",
+            "type": "image/png",
+            "sizes": "192x192",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/bank(2).png",
+            "type": "image/png",
+            "sizes": "256x256",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/bank.png",
+            "type": "image/png",
+            "sizes": "512x512",
+            "purpose": "maskable any"
+        }
+    ]
+}
