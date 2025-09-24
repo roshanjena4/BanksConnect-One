@@ -20,6 +20,12 @@ export const metadata: Metadata = {
   description: "It's a simple progressive web application made with NextJS",
   generator: "Next.js",
   manifest: "/manifest.json",
+  // Provide themeColor entries so Next injects adaptive <meta name="theme-color"> tags
+  // Browsers that support the media attribute will pick the correct color for light/dark.
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#1e2939' },
+  ],
   keywords: ["nextjs", "next14", "pwa", "next-pwa"],
 };
 

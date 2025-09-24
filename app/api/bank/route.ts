@@ -8,7 +8,7 @@ export async function GET() {
         if (userCookie) {
             const parsed = JSON.parse(userCookie);
             const userToken = parsed.token;
-
+           
             //debugger;
     const result = await connectionPool.query(`SELECT get_user_details_by_token_v2('${userToken}');`);
             if (result.rows.length > 0){
